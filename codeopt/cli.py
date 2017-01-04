@@ -10,7 +10,14 @@ def sample_and_run(filename, folder_prefix='.', result_var='result'):
     codeopt is a simple tool to run optimization of combination of
     parameters that affect a python code and gathe the results.
     """
-    content, variables = parse_file(filename)
+
+    # first pass to know variables
+    content, variables = parse_file(filename, folder='')
+    # second pass but with the folder, now that it is known
+    key = dict_hash(variables)
+    folder = os.path.join(folder_prefix, key)
+    content, variables = parse_file(filename, folder=folder)
+
     global_vars = {}
     local_vars = {}
     exec(content, global_vars, local_vars)
@@ -22,8 +29,6 @@ def sample_and_run(filename, folder_prefix='.', result_var='result'):
         result = 'undefined'
     content ='#result:{}\n'.format(result) + content
 
-    key = dict_hash(variables)
-    folder = os.path.join(folder_prefix, key)
     mkdir_path(folder)
     with open(os.path.join(folder, os.path.basename(filename)), 'w') as fd:
         fd.write(content)

@@ -8,7 +8,7 @@ from .samplers import randint
 def parse_file(filename, **kwargs):
     with open(filename, 'r') as fd:
         s = fd.read()
-    return parse_str(s)
+    return parse_str(s, **kwargs)
 
 samplers = {
     'uniform': uniform,
