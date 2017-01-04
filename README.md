@@ -28,8 +28,6 @@ codeopt takes a python file and uses jinja ([http://jinja.pocoo.org](http://jinj
 Here is an example of a typical python code that optimizes a machine learning model which is usable by codeopt:
 
 ```python
-import numpy as np
-from functools import partial
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import load_iris
 from sklearn.model_selection import cross_val_score

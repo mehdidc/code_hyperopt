@@ -1,5 +1,3 @@
-import numpy as np
-from functools import partial
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import load_iris
 from sklearn.model_selection import cross_val_score
