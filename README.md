@@ -7,7 +7,7 @@ parameters that affect a python code and gather the results.
 One application example is hyper-parameter optimization of machine
 learning models.
 
-The advantadge of codeopt lies in its simplicity.
+The advantage of codeopt lies in its simplicity.
 The original code to be optimized have to be modified a little to adapt to
 codeopt, so its readability (the original code) is not affected a lot.
 Also, codeopt allows easyness of prototyping because the original is not
@@ -23,7 +23,7 @@ pip install git+https://github.com/mehdidc/codeopt
 How does it work
 ================
 
-codeopt takes a python file and uses jinja <jinja.pocoo.org>, a well known template library, to detect automatically parameters from the code that need to be optimized. Each time codeopt is launched on a python file, those parameters are replaced by sample values and the python file is ran and the results are gathered.
+codeopt takes a python file and uses jinja ([http://jinja.pocoo.org](http://jinja.pocoo.org)), a well known python template library, to detect automatically parameters from the code that need to be optimized. Each time codeopt is launched on a python file, those parameters are replaced by some sampled values, then the python file is run and finally the results are gathered.
 
 Here is an example of a typical python code that optimizes a machine learning model which is usable by codeopt:
 
