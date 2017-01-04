@@ -5,7 +5,7 @@ import json
 
 from .parser import parse_file
 
-def sample_and_run(filename, folder_prefix='.', result_var='result'):
+def sample_and_run(filename, folder_prefix='.', result_var='result', verbose=0):
     """
     codeopt is a simple tool to run optimization of combination of
     parameters that affect a python code and gathe the results.
@@ -13,25 +13,33 @@ def sample_and_run(filename, folder_prefix='.', result_var='result'):
 
     # first pass to know variables
     content, variables = parse_file(filename, folder='')
+    if verbose > 0:
+        print('parameters : {}'.format(variables.keys()))
     # second pass but with the folder, now that it is known
     key = dict_hash(variables)
     folder = os.path.join(folder_prefix, key)
     content, variables = parse_file(filename, folder=folder)
+    
+    # set name to main to simulate that we run the script with python
+    global_vars = globals().copy()
+    global_vars['__name__'] = '__main__'
+    # run th script
+    exec(content, global_vars, global_vars)
 
-    global_vars = {}
-    local_vars = {}
-    exec(content, global_vars, local_vars)
+    # gather the result variable
     all_vars = global_vars
-    all_vars.update(local_vars)
     if result_var in all_vars:
         result = all_vars[result_var]
     else:
+        # if the result variable is not found, it is considered
+        # as 'undefined'
         result = 'undefined'
+    # add a comment on the top of the srcript with the result
     content ='#result:{}\n'.format(result) + content
-
     mkdir_path(folder)
     with open(os.path.join(folder, os.path.basename(filename)), 'w') as fd:
         fd.write(content)
+    # write result.json which contains params and corresponding result
     with open(os.path.join(folder, 'result.json'), 'w') as fd:
         d = {'params': variables, 'result': result}
         json.dump(d, fd)
