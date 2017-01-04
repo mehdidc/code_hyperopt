@@ -14,3 +14,6 @@ def uniform(rng, low=0, high=1):
 
 def randint(rng, low=0, high=1):
     return rng.randint(low=low, high=high)
+
+def loguniform(rng, low=0, high=1, base=10):
+    return base ** rng.uniform(low=low, high=high)

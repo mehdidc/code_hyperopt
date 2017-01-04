@@ -3,6 +3,7 @@ from jinja2 import Environment
 from .samplers import sampler
 from .samplers import uniform
 from .samplers import randint
+from .samplers import loguniform
 
 
 def parse_file(filename, **kwargs):
@@ -12,7 +13,8 @@ def parse_file(filename, **kwargs):
 
 samplers = {
     'uniform': uniform,
-    'randint': randint
+    'randint': randint,
+    'loguniform': loguniform
 }
 
 def parse_str(s, samplers=samplers, **kwargs):
