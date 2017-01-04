@@ -1,6 +1,9 @@
 import numpy as np
 
 def sampler(f, random_state=None, env=None):
+    """
+    sampler directory for jinja
+    """
     rng = np.random.RandomState(random_state)
     def f_(x, *args, **kwargs):
         val = f(rng, *args, **kwargs)
@@ -9,6 +12,9 @@ def sampler(f, random_state=None, env=None):
     f_.__name__ = f.__name__
     return f_
 
+# currently available samplers
+# use in jinja as is, except you don't have to specify 
+# the first argument (rng)
 def uniform(rng, low=0, high=1):
     return rng.uniform(low=low, high=high)
 

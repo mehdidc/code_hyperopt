@@ -40,6 +40,8 @@ scores = cross_val_score(clf, iris.data, iris.target, cv=5)
 result = scores.mean()
 ```
 
+The available samplers are documented in the `samplers` module.
+
 this code have two parameters to be optimize, "max_depth" and "n_estimators" and we specify that
 both their prior is an integer between 1 and 100.
 We can then launch codeopt on this file by using :
@@ -62,3 +64,14 @@ the options of codeopt for more information :
 ```bash
 codeopt --help
 ```
+
+Samplers
+========
+
+The currently available samplers are the following:
+
+    - uniform
+    - randint
+    - loguniform
+
+See the module `samplers.py` for more information.
