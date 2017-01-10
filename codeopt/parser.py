@@ -4,7 +4,7 @@ from .samplers import sampler
 from .samplers import uniform
 from .samplers import randint
 from .samplers import loguniform
-
+from .samplers import grid
 
 def parse_file(filename, **kwargs):
     with open(filename, 'r') as fd:
@@ -14,7 +14,8 @@ def parse_file(filename, **kwargs):
 samplers = {
     'uniform': uniform,
     'randint': randint,
-    'loguniform': loguniform
+    'loguniform': loguniform,
+    'grid': grid
 }
 
 def parse_str(s, samplers=samplers, **kwargs):

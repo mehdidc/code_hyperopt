@@ -73,5 +73,6 @@ The currently available samplers are the following:
     - uniform
     - randint
     - loguniform
+    - grid
 
 See the module `samplers.py` for more information.

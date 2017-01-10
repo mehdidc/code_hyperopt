@@ -2,7 +2,8 @@ import numpy as np
 
 def sampler(f, random_state=None, env=None):
     """
-    sampler directory for jinja
+    'filter' to use for jinja in order to sample
+    values
     """
     rng = np.random.RandomState(random_state)
     def f_(x, *args, **kwargs):
@@ -23,3 +24,6 @@ def randint(rng, low=0, high=1):
 
 def loguniform(rng, low=0, high=1, base=10):
     return base ** rng.uniform(low=low, high=high)
+
+def grid(rng, *vals):
+    return rng.choice(vals)

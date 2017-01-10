@@ -1,11 +1,13 @@
-from clize import run
+from datetime import datetime
 import os
 import hashlib
 import json
 
+from clize import run
+
 from .parser import parse_file
 
-def sample_and_run(filename, folder_prefix='.', result_var='result', test_only=False, verbose=0):
+def sample_and_run(filename, *, folder_prefix='.', result_var='result', test_only=False, verbose=0):
     """
     codeopt is a simple tool to run optimization of combination of
     parameters that affect a python code and gathe the results.
@@ -23,18 +25,22 @@ def sample_and_run(filename, folder_prefix='.', result_var='result', test_only=F
     # set name to main to simulate that we run the script with python
     global_vars = globals().copy()
     global_vars['__name__'] = '__main__'
-    
+   
+
+    start_time = str(datetime.now())
+   
     if test_only is False:
         # create the folder and initialize 'result.json' with the params only (without result)
-
         mkdir_path(folder) # create the folder because the script might put files on it
         # write result.json which contains params only (before execution)
         with open(os.path.join(folder, 'result.json'), 'w') as fd:
-            d = {'params': variables}
+            d = {'params': variables, 'start_time': start_time}
             json.dump(d, fd)
     
     # run the script
     exec(content, global_vars, global_vars)
+    
+    end_time = str(datetime.now())
 
     # gather the result variable
     all_vars = global_vars
@@ -53,7 +59,7 @@ def sample_and_run(filename, folder_prefix='.', result_var='result', test_only=F
 
         # update result.json with the result
         with open(os.path.join(folder, 'result.json'), 'w') as fd:
-            d = {'params': variables, 'result': result}
+            d = {'params': variables, 'result': result, 'start_time': start_time, 'end_time': end_time}
             json.dump(d, fd)
 
 def dict_hash(d, algo='md5'):
