@@ -4,7 +4,7 @@ from .samplers import sampler
 from .samplers import uniform
 from .samplers import randint
 from .samplers import loguniform
-from .samplers import grid
+from .samplers import choice
 
 def parse_file(filename, **kwargs):
     with open(filename, 'r') as fd:
@@ -15,13 +15,13 @@ samplers = {
     'uniform': uniform,
     'randint': randint,
     'loguniform': loguniform,
-    'grid': grid
+    'choice': choice
 }
 
-def parse_str(s, samplers=samplers, **kwargs):
+def parse_str(s, samplers=samplers, random_state=None, **kwargs):
     env = Environment()
     for name, func in samplers.items():
-        samplers[name] = sampler(func, env=env)
+        samplers[name] = sampler(func, env=env, random_state=random_state)
     env.filters.update(samplers)
     env.variables = {}
     t = env.from_string(s)

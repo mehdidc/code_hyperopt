@@ -25,5 +25,5 @@ def randint(rng, low=0, high=1):
 def loguniform(rng, low=0, high=1, base=10):
     return base ** rng.uniform(low=low, high=high)
 
-def grid(rng, *vals):
-    return rng.choice(vals)
+def choice(rng, *vals):
+    return np.asscalar(rng.choice(vals))

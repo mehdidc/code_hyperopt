@@ -1,3 +1,6 @@
+import numpy as np
+import random
+
 from datetime import datetime
 import os
 import hashlib
@@ -7,25 +10,27 @@ from clize import run
 
 from .parser import parse_file
 
-def sample_and_run(filename, *, folder_prefix='.', result_var='result', test_only=False, verbose=0):
+def sample_and_run(filename, *, folder_prefix='.', result_var='result', test_only=False, verbose=0, seed=None):
     """
     codeopt is a simple tool to run optimization of combination of
     parameters that affect a python code and gathe the results.
     """
-
-    # first pass to know variables
-    content, variables = parse_file(filename, folder='')
+    if seed is not None:
+        seed = int(seed)
+    # first pass to know the variables
+    content, variables = parse_file(filename, folder='', random_state=seed)
     if verbose > 0:
-        print('parameters : {}'.format(variables.keys()))
+        print('parameters :'.format(variables))
+        for k, v in variables.items():
+            print('{}={}, type={}'.format(k, v, type(v)))
     # second pass but with the folder, now that it is known
     key = dict_hash(variables)
     folder = os.path.join(folder_prefix, key)
-    content, variables = parse_file(filename, folder=folder)
+    content, variables = parse_file(filename, folder=folder, random_state=seed)
     
     # set name to main to simulate that we run the script with python
     global_vars = globals().copy()
     global_vars['__name__'] = '__main__'
-   
 
     start_time = str(datetime.now())
    
@@ -34,7 +39,7 @@ def sample_and_run(filename, *, folder_prefix='.', result_var='result', test_onl
         mkdir_path(folder) # create the folder because the script might put files on it
         # write result.json which contains params only (before execution)
         with open(os.path.join(folder, 'result.json'), 'w') as fd:
-            d = {'params': variables, 'start_time': start_time}
+            d = {'params': variables, 'start_time': start_time, 'seed': seed}
             json.dump(d, fd)
     
     # run the script
@@ -59,7 +64,7 @@ def sample_and_run(filename, *, folder_prefix='.', result_var='result', test_onl
 
         # update result.json with the result
         with open(os.path.join(folder, 'result.json'), 'w') as fd:
-            d = {'params': variables, 'result': result, 'start_time': start_time, 'end_time': end_time}
+            d = {'params': variables, 'result': result, 'start_time': start_time, 'end_time': end_time, 'seed': seed}
             json.dump(d, fd)
 
 def dict_hash(d, algo='md5'):
