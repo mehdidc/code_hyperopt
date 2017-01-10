@@ -89,8 +89,8 @@ def sample_and_run(filename, *, folder_prefix='.', test_only=False, seed=None, r
         result = all_vars[result_variable_name]
     else:
         # if the result variable is not found, it is considered
-        # as 'undefined'
-        result = 'undefined'
+        # as None (and appears in json as 'null')
+        result = None
 
     if test_only is False:
         # add a comment on the top of the script with the result
