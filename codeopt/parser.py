@@ -19,6 +19,7 @@ samplers = {
 }
 
 def parse_str(s, samplers=samplers, random_state=None, **kwargs):
+    samplers = samplers.copy()
     env = Environment()
     for name, func in samplers.items():
         samplers[name] = sampler(func, env=env, random_state=random_state)
