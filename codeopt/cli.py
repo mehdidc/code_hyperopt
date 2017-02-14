@@ -78,6 +78,10 @@ def sample_and_run(filename, *, folder_prefix='.', test_only=False, seed=None, r
                 print(d)
             json.dump(d, fd)
     
+    # write the script where variables are replaced by their values
+    with open(os.path.join(folder, os.path.basename(filename)), 'w') as fd:
+        fd.write(content)
+
     # run the script
     exec(content, global_vars, global_vars)
     
