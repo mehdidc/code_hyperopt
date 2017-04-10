@@ -13,7 +13,7 @@ from clize import run
 from .parser import parse_file
 
 
-def sample_and_run(filename, *, folder_prefix='.', test_only=False, seed=None, result_variable_name='result', verbose=0):
+def sample_and_run(filename, *, folder_prefix='.', test_only=False, seed=None, result_variable_name='result', argv=None, verbose=0):
     """
     codeopt is a simple tool to run optimization of combination of
     parameters that affect a python code and gathe the results.
@@ -38,7 +38,11 @@ def sample_and_run(filename, *, folder_prefix='.', test_only=False, seed=None, r
     
     name of the variable that will appear in the json result.json filename
     for storing the result variable
-    
+
+    --argv=STR
+
+    arguments separated by commas to use when executing the code (it mocks sys.argv)
+
     --verbose=INT
     
     if verbose is 1, print some debug messages.
@@ -77,14 +81,23 @@ def sample_and_run(filename, *, folder_prefix='.', test_only=False, seed=None, r
             if verbose > 0:
                 print(d)
             json.dump(d, fd)
+        # write the script where variables are replaced by their values
+        with open(os.path.join(folder, os.path.basename(filename)), 'w') as fd:
+            fd.write(content)
     
-    # write the script where variables are replaced by their values
-    with open(os.path.join(folder, os.path.basename(filename)), 'w') as fd:
-        fd.write(content)
-
+    # mock argv
+    if argv:
+        old = sys.argv[1:]
+        sys.argv[1:] = argv.split(',')
+    
     # run the script
+
     exec(content, global_vars, global_vars)
     
+    # unmock argv
+    if argv:
+        sys.argv[1:] = old
+
     end_time = str(datetime.now())
 
     # gather the result variable
