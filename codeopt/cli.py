@@ -25,7 +25,7 @@ def sample_and_run(filename, *,
                    test_only=False, 
                    seed=None,  
                    result_variable_name='result', 
-                   argv=None, verbose=0):
+                   argv='', verbose=0):
     """
     codeopt is a simple tool to run optimization of combination of
     parameters that affect a python code and gathe the results.
@@ -74,7 +74,7 @@ def sample_and_run(filename, *,
 
     --argv=STR
 
-    arguments separated by commas to use when executing the code (it mocks sys.argv)
+    arguments separated by spaces to use when executing the code (it mocks sys.argv)
 
     --verbose=INT
     
@@ -131,7 +131,7 @@ def sample_and_run(filename, *,
             seed = random.randint(0, 4294967295)
         # first pass to know the variables
         content, variables = parse_file(filename, folder='', random_state=seed)
-
+    
     if verbose > 0:
         print('parameters :'.format(variables))
         for k, v in variables.items():
@@ -160,17 +160,14 @@ def sample_and_run(filename, *,
             fd.write(content)
     
     # mock argv
-    if argv:
-        old = sys.argv[1:]
-        sys.argv[1:] = argv.split(',')
-    
+    old = sys.argv[:]
+    sys.argv = [os.path.basename(filename)] + (argv.split(' ') if argv else [])
     # run the script
-
     exec(content, global_vars, global_vars)
     
     # unmock argv
     if argv:
-        sys.argv[1:] = old
+        sys.argv = old
 
     end_time = str(datetime.now())
 
