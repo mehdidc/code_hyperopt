@@ -7,4 +7,4 @@ clf = RandomForestClassifier(
     n_estimators={{ "n_estimators" | randint(1, 100)  }}
 )
 scores = cross_val_score(clf, iris.data, iris.target, cv=5)
-result = scores.mean()
+result = 1 - scores.mean()
