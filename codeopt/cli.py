@@ -19,6 +19,9 @@ from .parser import parse_file
 def sample_and_run(filename, *, 
                    folder_prefix='.', 
                    bayesopt=False, 
+                   optim='minimize',
+                   trials=1000,
+                   kappa=1.96,
                    test_only=False, 
                    seed=None,  
                    result_variable_name='result', 
@@ -35,9 +38,23 @@ def sample_and_run(filename, *,
     --bayesopt=BOOL (default is False)
 
     if True, use UCB based random forest bayesian optimization to select the next parameters, otherwise
-    use randonm sampling. 
-    IMPORTANT : the option bayesopt will assume that the problem is a minimization problem, so
-    the variable result in the script should reflect this (the low values should express better scores).
+    use randonm sampling. if minimize is True, it will try the minimize "result", otherwise it will
+    try to maximize it.
+
+    --optim='minimize'/'maximize' (default is 'minimize')
+
+    Only used if bayesopt is True. 
+    Specifiy whether it is a minimization problem : 'minimize'
+    or a maximization problem : 'maximize'.
+
+    --trials=INT (default is 1000)
+
+    for "bayesopt" only:  nb. of candidates to sample in order to find the next candidate.
+
+    --kappa=float (default is 1.96)
+
+    for "bayesopt" only : tradeoff between exploration and exploitation, higher kapp
+    means more exploration.
 
     --test-only=BOOL (default is False)
     
@@ -64,6 +81,10 @@ def sample_and_run(filename, *,
     if verbose is 1, print some debug messages.
 
     """
+    if optim not in ('minimize', 'maximize'):
+        print('optim should either be "minimize" or "maximize"')
+        return
+
     if bayesopt:
         X, y, cols = _collect_results(folder_prefix)
         if len(X) == 0:
@@ -91,9 +112,13 @@ def sample_and_run(filename, *,
         y = np.concatenate([tree.predict(X)[np.newaxis, :] for tree in trees], axis=0)
         pred_mean = y.mean(axis=0)
         pred_std = y.std(axis=0)
-        kappa = 1.96
-        score = pred_mean - kappa * pred_std
-        seed = seeds[np.argmin(score)]
+        kappa = 1.96 # tradoff between exploration and exploitation (higher = more exploitation)
+        if optim == 'minimize':
+            score = pred_mean - kappa * pred_std
+            seed = seeds[np.argmin(score)]
+        else:
+            score = pred_mean + kappa * pred_std
+            seed = seeds[np.argmax(score)]
         content, variables = parse_file(filename, folder='', random_state=seed)
     else:
         if seed is not None:
@@ -155,8 +180,9 @@ def sample_and_run(filename, *,
         result = all_vars[result_variable_name]
         if verbose > 0 and bayesopt:
             print('New score : {}'.format(result))
-            prev_best = np.min(y)
-            if result < prev_best:
+            prev_best = np.min(y) if optim == 'minimize' else np.max(y)
+            improvement = result < prev_best if optim == 'minimize' else result > prev_best
+            if improvement:
                 print('Improvement over previous best score : from {:.3f} to {:.3f}'.format(prev_best, result))
             else:
                 print('No improvement over best previous score.')
